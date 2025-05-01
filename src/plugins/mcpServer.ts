@@ -1,8 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import client from '~/client'
-import { calendar_v3 } from 'googleapis'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
+import list from '~/event/list'
+import create from '~/event/create'
 
 export default defineNitroPlugin(async (_nitroApp) => {
   const server = new McpServer({
@@ -13,32 +13,59 @@ export default defineNitroPlugin(async (_nitroApp) => {
   server.tool(
     'list-calendar-events',
     {
-      maxResult: z.number().nullable(),
-      startDate: z.string().date().nullable(),
-      endDate: z.string().date().nullable(),
+      maxResult: z.number().optional(),
+      startDate: z.string().date().optional(),
+      endDate: z.string().date().optional(),
     },
-    // new ResourceTemplate('event://event/{maxResult/{startDate}/{endDate}', { list: undefined }),
     async ({ maxResult, startDate, endDate }) => {
-      const options: calendar_v3.Params$Resource$Events$List = {
-        calendarId: 'primary',
-        maxResults: 50,
-        singleEvents: true,
-      }
+      const result = list({ maxResult, startDate, endDate })
+      const data = JSON.stringify(result)
 
-      if (maxResult) {
-        options.maxResults = maxResult
+      return {
+        content: [
+          {
+            type: 'text',
+            text: data,
+          },
+        ],
       }
+    }
+  )
 
-      if (startDate) {
-        options.timeMin = new Date(startDate).toISOString()
+  server.tool(
+    'create-calendar-event',
+    {
+      summary: z.string(),
+      startDatetime: z.string().datetime({ local: true }),
+      endDatetime: z.string().datetime({ local: true }),
+      description: z.string().optional(),
+      location: z.string().optional(),
+    },
+    async (params) => {
+      // @ts-expect-error
+      const result = await create(params)
+      const data = JSON.stringify(result)
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: data,
+          },
+        ],
       }
+    }
+  )
 
-      if (endDate) {
-        options.timeMax = new Date(endDate).toISOString()
-      }
-
-      const res = await client.events.list(options)
-      const data = JSON.stringify(res.data.items)
+  server.tool(
+    'delete-calendar-event',
+    {
+      eventId: z.string(),
+    },
+    async (params) => {
+      // @ts-expect-error
+      const result = await create(params.eventId)
+      const data = JSON.stringify(result)
 
       return {
         content: [

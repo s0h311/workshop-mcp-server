@@ -4,8 +4,6 @@ import { JSONClient } from 'google-auth-library/build/src/auth/googleauth'
 import { authenticate } from '@google-cloud/local-auth'
 import { OAuth2Client } from 'google-auth-library'
 
-const cwd = process.cwd()
-
 const tokenJsonPath = '/Users/soheil/projects/workshop-mcp-server/token.json'
 const credentialsJsonPath = '/Users/soheil/projects/workshop-mcp-server/credentials.json'
 
@@ -53,7 +51,7 @@ async function authorize(): Promise<JSONClient | OAuth2Client> {
   }
 
   client = await authenticate({
-    scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
+    scopes: ['https://www.googleapis.com/auth/calendar'],
     keyfilePath: credentialsJsonPath,
   })
 
