@@ -1,5 +1,4 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
 import { google } from 'googleapis'
 import { JSONClient } from 'google-auth-library/build/src/auth/googleauth'
 import { authenticate } from '@google-cloud/local-auth'
@@ -7,8 +6,8 @@ import { OAuth2Client } from 'google-auth-library'
 
 const cwd = process.cwd()
 
-const tokenJsonPath = join(cwd, 'token.json')
-const credentialsJsonPath = join(cwd, 'credentials.json')
+const tokenJsonPath = '/Users/soheil/projects/workshop-mcp-server/token.json'
+const credentialsJsonPath = '/Users/soheil/projects/workshop-mcp-server/credentials.json'
 
 if (!existsSync(tokenJsonPath)) {
   writeFileSync(tokenJsonPath, '', { encoding: 'utf-8' })

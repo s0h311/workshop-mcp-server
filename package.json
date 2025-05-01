@@ -10,7 +10,8 @@
   "dependencies": {
     "@google-cloud/local-auth": "2.1.0",
     "@modelcontextprotocol/sdk": "^1.10.1",
-    "googleapis": "105"
+    "googleapis": "105",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "nitropack": "latest",
