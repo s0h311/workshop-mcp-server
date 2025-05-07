@@ -21,11 +21,17 @@ export default async function list({
   }
 
   if (startDate) {
-    options.timeMin = new Date(startDate).toISOString()
+    const date = new Date(startDate)
+    date.setHours(0, 0, 0)
+
+    options.timeMin = date.toISOString()
   }
 
   if (endDate) {
-    options.timeMax = new Date(endDate).toISOString()
+    const date = new Date(endDate)
+    date.setHours(23, 59, 59)
+
+    options.timeMax = date.toISOString()
   }
 
   const res = await client.events.list(options)

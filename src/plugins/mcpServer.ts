@@ -3,6 +3,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
 import list from '~/event/list'
 import create from '~/event/create'
+import deleteEvent from '~/event/delete'
 
 export default defineNitroPlugin(async (_nitroApp) => {
   const server = new McpServer({
@@ -17,8 +18,8 @@ export default defineNitroPlugin(async (_nitroApp) => {
       startDate: z.string().date().optional(),
       endDate: z.string().date().optional(),
     },
-    async ({ maxResult, startDate, endDate }) => {
-      const result = list({ maxResult, startDate, endDate })
+    async (params) => {
+      const result = await list(params)
       const data = JSON.stringify(result)
 
       return {
@@ -63,8 +64,7 @@ export default defineNitroPlugin(async (_nitroApp) => {
       eventId: z.string(),
     },
     async (params) => {
-      // @ts-expect-error
-      const result = await create(params.eventId)
+      const result = await deleteEvent(params.eventId)
       const data = JSON.stringify(result)
 
       return {
@@ -77,6 +77,23 @@ export default defineNitroPlugin(async (_nitroApp) => {
       }
     }
   )
+
+  server.prompt('manage-calendar-efficiently', () => {
+    return {
+      messages: [
+        {
+          role: 'user',
+          content: {
+            type: 'text',
+            text: `Du bist dafür verantwortlich meinen Kalender effizient zu verwalten.
+            Antworte immer in kurzen und akkuraten Sätzen.
+            Berücksichtige, wenn es Sinn ergibt die aktuellen Termine der Woche.
+            Es ist besser, wenn du Daten und Zeiten ohne Zeitzone angibst.`,
+          },
+        },
+      ],
+    }
+  })
 
   const transport = new StdioServerTransport()
   await server.connect(transport)
